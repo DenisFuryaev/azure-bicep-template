@@ -1,16 +1,38 @@
 {
-  "type": "microsoftGraphV1",
-  "properties": {
-    "resources": [
-      {
-        "type": "Microsoft.Graph/applications@v1.0",
-        "name": "app",
-        "apiVersion": "v1.0",
-        "properties": {
-          "uniqueName": "denis-furiaev-bicep-test",
-          "displayName": "denis-furiaev-bicep-test"
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "2.1-experimental",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_EXPERIMENTAL_WARNING": "This template uses ARM features that are experimental. Experimental features should be enabled for testing purposes only, as there are no guarantees about the quality or stability of these features. Do not enable these settings for any production usage, or your production environment may be subject to breaking.",
+    "_EXPERIMENTAL_FEATURES_ENABLED": [
+      "Extensibility"
+    ],
+    "_generator": {
+      "name": "bicep",
+      "version": "0.35.1.17967",
+      "templateHash": "13772387343598335695"
+    }
+  },
+  "parameters": {
+    "appName": {
+      "type": "string",
+      "defaultValue": "denis-furiaev-bicep-test"
+    }
+  },
+  "imports": {
+    "microsoftGraphV1": {
+      "provider": "MicrosoftGraph",
+      "version": "0.2.0-preview"
+    }
+  },
+  "resources": {
+    "app": {
+      "import": "microsoftGraphV1",
+      "type": "Microsoft.Graph/applications@v1.0",
+      "properties": {
+        "uniqueName": "[parameters('appName')]",
+        "displayName": "[parameters('appName')]"
       }
-    ]
+    }
   }
 }
