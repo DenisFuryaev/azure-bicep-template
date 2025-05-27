@@ -1,0 +1,16 @@
+{
+  "type": "microsoftGraphV1",
+  "properties": {
+    "resources": [
+      {
+        "type": "Microsoft.Graph/applications@v1.0",
+        "name": "app",
+        "apiVersion": "v1.0",
+        "properties": {
+          "uniqueName": "denis-furiaev-bicep-test",
+          "displayName": "denis-furiaev-bicep-test"
+        }
+      }
+    ]
+  }
+}
