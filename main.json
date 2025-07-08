@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
   "languageVersion": "2.1-experimental",
   "contentVersion": "1.0.0.0",
   "metadata": {
@@ -10,13 +10,13 @@
     "_generator": {
       "name": "bicep",
       "version": "0.35.1.17967",
-      "templateHash": "13772387343598335695"
+      "templateHash": "2419028010365358879"
     }
   },
   "parameters": {
     "appName": {
       "type": "string",
-      "defaultValue": "denis-furiaev-bicep-test"
+      "defaultValue": "denis-furiaev-bicep-app"
     }
   },
   "imports": {
