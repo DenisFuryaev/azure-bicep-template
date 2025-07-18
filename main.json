@@ -1,38 +1,151 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
-  "languageVersion": "2.1-experimental",
   "contentVersion": "1.0.0.0",
   "metadata": {
-    "_EXPERIMENTAL_WARNING": "This template uses ARM features that are experimental. Experimental features should be enabled for testing purposes only, as there are no guarantees about the quality or stability of these features. Do not enable these settings for any production usage, or your production environment may be subject to breaking.",
-    "_EXPERIMENTAL_FEATURES_ENABLED": [
-      "Extensibility"
-    ],
     "_generator": {
       "name": "bicep",
-      "version": "0.35.1.17967",
-      "templateHash": "2419028010365358879"
+      "version": "0.36.1.42791",
+      "templateHash": "12954717571545085979"
     }
   },
   "parameters": {
-    "appName": {
+    "location": {
       "type": "string",
-      "defaultValue": "denis-furiaev-bicep-app"
+      "defaultValue": "westeurope"
+    },
+    "resourcePrefix": {
+      "type": "string",
+      "defaultValue": "denis-furiaev-empty"
+    },
+    "appRegistrationServicePrincipalId": {
+      "type": "string",
+      "defaultValue": "ed66713b-23f8-431f-9591-4f8416044ee2"
     }
   },
-  "imports": {
-    "microsoftGraphV1": {
-      "provider": "MicrosoftGraph",
-      "version": "0.2.0-preview"
-    }
+  "variables": {
+    "appRegistrationSuffix": "-app",
+    "resourceGroupSuffix": "-rg",
+    "resourceGroupName": "[format('{0}{1}', parameters('resourcePrefix'), variables('resourceGroupSuffix'))]",
+    "readerRoleDefinitionId": "acdd72a7-3385-48ef-bd42-f606fba81ae7",
+    "contributorRoleDefinitionId": "b24988ac-6180-42a0-ab88-20f7382dd24c"
   },
-  "resources": {
-    "app": {
-      "import": "microsoftGraphV1",
-      "type": "Microsoft.Graph/applications@v1.0",
+  "resources": [
+    {
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2024-03-01",
+      "name": "[variables('resourceGroupName')]",
+      "location": "[parameters('location')]"
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "resourceGroupContributorRoleAssignment",
+      "resourceGroup": "[variables('resourceGroupName')]",
       "properties": {
-        "uniqueName": "[parameters('appName')]",
-        "displayName": "[parameters('appName')]"
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "principalId": {
+            "value": "[parameters('appRegistrationServicePrincipalId')]"
+          },
+          "roleDefinitionId": {
+            "value": "[variables('contributorRoleDefinitionId')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "12074950021572202065"
+            }
+          },
+          "parameters": {
+            "principalId": {
+              "type": "string"
+            },
+            "roleDefinitionId": {
+              "type": "string"
+            }
+          },
+          "variables": {
+            "roleAssignmentName": "[guid(parameters('roleDefinitionId'), resourceGroup().id)]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "name": "[variables('roleAssignmentName')]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', parameters('roleDefinitionId'))]",
+                "principalId": "[parameters('principalId')]",
+                "principalType": "ServicePrincipal"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('resourceGroupName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "subscriptionReaderRoleAssignment",
+      "location": "[deployment().location]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "principalId": {
+            "value": "[parameters('appRegistrationServicePrincipalId')]"
+          },
+          "roleDefinitionId": {
+            "value": "[variables('readerRoleDefinitionId')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "12340111715690640729"
+            }
+          },
+          "parameters": {
+            "principalId": {
+              "type": "string"
+            },
+            "roleDefinitionId": {
+              "type": "string"
+            }
+          },
+          "variables": {
+            "roleAssignmentName": "[guid(parameters('roleDefinitionId'), subscription().id)]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "name": "[variables('roleAssignmentName')]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', parameters('roleDefinitionId'))]",
+                "principalId": "[parameters('principalId')]",
+                "principalType": "ServicePrincipal"
+              }
+            }
+          ]
+        }
       }
     }
-  }
+  ]
 }
